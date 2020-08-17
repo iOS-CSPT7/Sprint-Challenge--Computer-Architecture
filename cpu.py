@@ -209,7 +209,7 @@ class CPU:
             elif ir == JNE:  #flag clear(0), jump 
                 reg_a = self.ram_read(self.pc + 1)
                 operand_a = self.reg[reg_a]
-                if self.fl == 0:
+                if self.fl != 1:#tried != 1 instead of 0
                     self.pc = operand_a
                 else: 
                     self.pc += 2 
