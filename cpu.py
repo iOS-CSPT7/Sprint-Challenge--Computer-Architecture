@@ -24,6 +24,7 @@ class CPU:
         self.ram = [0] * 256 
         self.reg = [0] * 8
         self.pc = 0
+        self.FL = 0
          
         pass
 
@@ -80,6 +81,15 @@ class CPU:
         #elif op == "SUB": etc
         elif op == "MUL":
             self.reg[reg_a] *= self.reg[reg_b]
+
+        elif op == "CMP":
+            if self.reg[reg_a] == self.reg[reg_b]:
+                self.FL = self.FL | 0b00000001
+            if self.reg[reg_a] < self.reg[reg_b]:
+                self.FL = self.FL | 0b00000100
+            if self.reg[reg_a] > self.reg[reg_b]:
+                self.FL = self.FL | 0b00000010
+                # from readme instructions 
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -167,5 +177,10 @@ class CPU:
                 a = self.ram_read(pc + 1)
                 b = self.ram_read(pc + 2)
                 self.alu("ADD", a, b)
+                self.pc += 3 
+            elif ir == CMP:
+                reg_a = self.ram_read(self.pc+ 1)
+                reg_b = self.ram_read(self.pc + 2)
+                self.alu("CMP", reg_a, reg_b)
                 self.pc += 3 
    
