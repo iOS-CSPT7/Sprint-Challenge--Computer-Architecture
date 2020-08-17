@@ -28,8 +28,10 @@ class CPU:
         self.ram = [0] * 256 
         self.reg = [0] * 8
         self.pc = 0
-        self.FL = 0
-         
+        self.fl = 0
+        # self.less = 0
+        # self.greater = 0
+        # self.equal = 0
         pass
 
     def load(self, filename = None):
@@ -87,14 +89,18 @@ class CPU:
             self.reg[reg_a] *= self.reg[reg_b]
 
         elif op == "CMP":
-            self.FL = 0x00
+            self.fl = 0x00
             if self.reg[reg_a] == self.reg[reg_b]:
-                self.FL = self.FL | 0b00000001
+                self.fl = self.fl| 0b00000001
+                # self.equal = 1
             if self.reg[reg_a] < self.reg[reg_b]:
-                self.FL = self.FL | 0b00000100
+                self.fl = self.fl | 0b00000100
+                # self.less = 1
             if self.reg[reg_a] > self.reg[reg_b]:
-                self.FL = self.FL | 0b00000010
+                self.fl = self.fl | 0b00000010
+                # self.greater = 1
                 # from readme instructions 
+                # Set to one, otherwise 0.  00000LGE
         
         else:
             raise Exception("Unsupported ALU operation")
@@ -192,7 +198,7 @@ class CPU:
             elif ir == JEQ:
                 reg_a = self.ram_read(self.pc + 1)
                 operand_a = self.reg[reg_a]
-                if self.FL == 1: #true and jump
+                if self.fl == 1: #true and jump
                     self.pc = operand_a
                 else: 
                     self.pc += 2
@@ -203,7 +209,7 @@ class CPU:
             elif ir == JNE:  #flag clear(0), jump 
                 reg_a = self.ram_read(self.pc + 1)
                 operand_a = self.reg[reg_a]
-                if self.FL == 0:
+                if self.fl == 0:
                     self.pc = operand_a
                 else: 
                     self.pc += 2 
