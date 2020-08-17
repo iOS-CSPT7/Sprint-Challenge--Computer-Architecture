@@ -12,6 +12,10 @@ PUSH = 0b01000101
 CALL = 0b01010000
 RET = 0b00010001
 ADD = 0b10100000
+CMP = 0b10100111 
+JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110 
 
 SP = 7 
 
@@ -83,6 +87,7 @@ class CPU:
             self.reg[reg_a] *= self.reg[reg_b]
 
         elif op == "CMP":
+            self.FL = 0x00
             if self.reg[reg_a] == self.reg[reg_b]:
                 self.FL = self.FL | 0b00000001
             if self.reg[reg_a] < self.reg[reg_b]:
@@ -90,6 +95,7 @@ class CPU:
             if self.reg[reg_a] > self.reg[reg_b]:
                 self.FL = self.FL | 0b00000010
                 # from readme instructions 
+        
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -183,4 +189,22 @@ class CPU:
                 reg_b = self.ram_read(self.pc + 2)
                 self.alu("CMP", reg_a, reg_b)
                 self.pc += 3 
+            elif ir == JEQ:
+                reg_a = self.ram_read(self.pc + 1)
+                operand_a = self.reg[reg_a]
+                if self.FL == 1: #true and jump
+                    self.pc = operand_a
+                else: 
+                    self.pc += 2
+            elif ir == JMP: #just jump
+                reg_a = self.ram_read(self.pc + 1)
+                operand_a = self.reg[reg_a]
+                self.pc = operand_a
+            elif ir == JNE:  #flag clear(0), jump 
+                reg_a = self.ram_read(self.pc + 1)
+                operand_a = self.reg[reg_a]
+                if self.FL == 0:
+                    self.pc = operand_a
+                else: 
+                    self.pc += 2 
    
